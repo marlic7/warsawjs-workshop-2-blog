@@ -6,6 +6,9 @@
     "simple-mock-http-server": "^1.0.1"
   },
   "scripts": {
-    "start": "node_modules/.bin/simple-mock-http-server public -o"
+    "start": "node_modules/.bin/simple-mock-http-server -o"
+  },
+  "dependencies": {
+    "navigo": "^4.0.0"
   }
 }
