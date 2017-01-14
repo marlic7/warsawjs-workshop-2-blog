@@ -18,6 +18,10 @@
             let $article = $fake.firstElementChild;
             this.$dest.insertBefore($article, this.$dest.firstElementChild);
         }
+
+        removeAll() {
+            this.$dest.innerHTML = '';
+        }
     }
 
     root.blog.views.PostView = PostView;

@@ -10,6 +10,7 @@
         controllers: {},
         models: {},
         services: {},
+        adapters: {},
         views: {},
         utils: {}
     };

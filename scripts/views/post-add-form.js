@@ -20,17 +20,19 @@
 
             this.$addButton.addEventListener('click', this.toggleDisplayForm.bind(this));
             this.$addPostForm.addEventListener('submit', this.onSubmit.bind(this));
+            this.$deleteBtn.addEventListener('click', this.onDelete.bind(this));
         }
 
         toggleDisplayForm() {
             this.$addPostForm.classList.toggle('hide');
             this.loadDataToForm({ id: '', title: '', body: '' });
+            this.clearUrlHash();
         }
 
         getFormData() {
             let title = removeHTMLTags(this.$title.value);
             let body = removeHTMLTags(this.$body.value);
-            let id = removeHTMLTags(this.$id.value);
+            let id = Number(this.$id.value);
 
             return { id, title, body };
         }
@@ -56,14 +58,31 @@
 
             const formData = this.getFormData();
 
-            runtime.emit('new-post', formData);
+            if(formData.id) {
+                runtime.emit('edit-post', formData);
+            } else {
+                runtime.emit('new-post', formData);
+            }
 
             this.toggleDisplayForm();
             this.clearInputs();
+            this.clearUrlHash();
+        }
+
+        onDelete() {
+            const formData = this.getFormData();
+            runtime.emit('delete-post', formData);
+            this.toggleDisplayForm();
+            this.clearInputs();
+            this.clearUrlHash();
         }
 
         clearInputs() {
             this.$title.value = this.$body.value = '';
+        }
+
+        clearUrlHash() {
+            history.pushState("", document.title, window.location.pathname + window.location.search);
         }
     }
 

@@ -3,9 +3,41 @@
 
     // Jeśli będziemy wykorzystać REST API to ta funkcja się przyda.
     // let makeRequest = root.blog.utils.makeRequest;
-    let randomInteger = root.blog.utils.randomInteger;
 
-    const POST_KEY = 'posts';
+    let randomInteger = root.blog.utils.randomInteger;
+    let instanceCnt = 0;
+    let POST_KEY = 'posts';
+
+    class LocalStorageAdapter {
+        constructor(key) {
+            // check if one instance becouse of usage closure
+            instanceCnt++;
+            if(instanceCnt > 1) {
+                throw new Error('Only one instance of LocalStorageAdapter is allowed!');
+            }
+            POST_KEY = key;
+        }
+
+        createOne(data, callback) {
+            createOneInLocalStorage(data, callback);
+        }
+
+        readAll(callback) {
+            fetchLocalStorage(callback);
+        }
+
+        readOneById(id, callback) {
+            readOneByIdFromLocalStorage(id, callback);
+        }
+
+        updateOne(data, callback) {
+            updateOneInLocalStorage(data, callback);
+        }
+
+        deleteOne(data, callback) {
+            deleteOneFromLocalStorage(data, callback);
+        }
+    }
 
     // dostęp do localStorage jest synchroniczny ale API fetch i save
     // celowo zostało oparte na callback w celach edukacyjnych
@@ -22,8 +54,6 @@
 
     function saveLocalStorage(data, callback) {
         try {
-            console.log("data:", data);
-
             root.localStorage.setItem(POST_KEY, JSON.stringify(data));
             callback(null, data);
         } catch(err) {
@@ -86,7 +116,7 @@
                 return;
             }
             const idx = posts.findIndex(v => v.id === data.id);
-            if(idx) {
+            if(idx > -1) {
                 posts[idx] = data;
 
                 saveLocalStorage(posts, (err) => {
@@ -96,8 +126,9 @@
                     }
                     callback(null, data);
                 });
+            } else {
+                callback(new Error(`Nie znaleziono posta o id = ${data.id}`));
             }
-            callback(new Error(`Nie znaleziono posta o id = ${data.id}`));
         });
     }
 
@@ -122,33 +153,11 @@
                     }
                     callback();
                 });
+            } else {
+                callback(new Error(`Nie usunięto posta o id = ${data.id}`));
             }
-            callback(new Error(`Nie usunięto posta o id = ${data.id}`));
         });
     }
 
-    class PostsService {
-
-        static createOne(data, callback) {
-            createOneInLocalStorage(data, callback);
-        }
-
-        static readAll(callback) {
-            fetchLocalStorage(callback);
-        }
-
-        static readOneById(id, callback) {
-            readOneByIdFromLocalStorage(id, callback);
-        }
-
-        static updateOne(data, callback) {
-            updateOneInLocalStorage(data, callback);
-        }
-
-        static deleteOne(data, callback) {
-            deleteOneFromLocalStorage(data, callback);
-        }
-    }
-
-    root.blog.services.PostsService = PostsService;
+    root.blog.adapters.LocalStorageAdapter = LocalStorageAdapter;
 }(window));
