@@ -2,7 +2,6 @@
     'use strict';
 
     let runtime = root.blog.runtime;
-    let constants = root.blog.constants;
     let removeHTMLTags = root.blog.utils.removeHTMLTags;
 
     class AddPostFormView {
@@ -31,7 +30,7 @@
         onSubmit(evt) {
             evt.preventDefault();
 
-            runtime.emit(constants.post.NEW_POST, this.getFormData());
+            runtime.emit('new-post', this.getFormData());
 
             this.toggleDisplayForm();
             this.clearInputs();
@@ -42,5 +41,5 @@
         }
     }
 
-    root.blog.views.AddPostForm = AddPostFormView;
+    root.blog.views.AddPostFormView = AddPostFormView;
 }(window));

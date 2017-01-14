@@ -2,11 +2,10 @@
     'use strict';
 
     let runtime = root.blog.runtime;
-    let constants = root.blog.constants;
     let PostsService = root.blog.services.PostsService;
 
-    let AddPostFormView = root.blog.views.AddPostForm;
-    let PostView = root.blog.views.Post;
+    new root.blog.views.AddPostFormView();
+    let postView = new root.blog.views.PostView();
 
     let PostModel = root.blog.models.Post;
     let PostListModel = root.blog.models.PostList;
@@ -15,21 +14,32 @@
         constructor() {
             this.postListModel = new PostListModel();
 
-            new AddPostFormView();
-
-            PostsService.fetch((postList) => {
+            PostsService.readAll((err, postList) => {
+                if(err) {
+                    console.error(err);
+                    return;
+                }
                 postList.forEach(this.createPost, this);
             });
 
-            runtime.on(constants.post.NEW_POST, (post) => {
-                this.createPost(post);
-                PostsService.save(this.postListModel.toJSON());
+            runtime.on('new-post', (formData) => {
+                PostsService.createOne(formData, (err, post) => {
+                    if(err) {
+                        console.error(err);
+                        return;
+                    }
+                    this.createPost(post);
+                });
             });
         }
 
         createPost(post) {
-            this.postListModel.addPostModel(new PostModel(post));
-            new PostView().render(post);
+            let postModel = post;
+            if(!(post instanceof PostModel)) {
+                postModel = new PostModel(post);
+            }
+            this.postListModel.addPostModel(postModel);
+            postView.render(postModel);
         }
     }
 

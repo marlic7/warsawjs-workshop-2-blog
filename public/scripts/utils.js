@@ -14,8 +14,15 @@
         xhr.send();
     }
 
-    function randomInteger() {
-        return parseInt(Math.random() * 10000);
+    function randomInteger(used = []) {
+        if(used.length > 1000) {
+            throw new Error('Za dużo wygenerowanych identyfikatorów!');
+        }
+        const id = parseInt(Math.random() * 10000);
+        if(used.includes(id)) {
+            return randomInteger(used);
+        }
+        return id;
     }
 
     function removeHTMLTags(htmlString) {

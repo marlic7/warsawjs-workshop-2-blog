@@ -20,5 +20,5 @@
         }
     }
 
-    root.blog.views.Post = PostView;
+    root.blog.views.PostView = PostView;
 }(window));

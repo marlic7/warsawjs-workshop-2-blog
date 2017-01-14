@@ -9,10 +9,6 @@
         addPostModel(postModel) {
             this.posts.push(postModel);
         }
-
-        toJSON() {
-            return this.posts.map((postModel) => postModel.toJSON());
-        }
     }
 
     root.blog.models.PostList = PostList;
